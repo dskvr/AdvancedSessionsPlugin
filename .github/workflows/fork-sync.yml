@@ -32,7 +32,7 @@ jobs:
     
     - name: Run 
       run: |
-        if [[ "$ref_synced" != "$ref_current" ]]; then #it's updated
+        if [[ "$ref_synced" != "$ref_current" ]]; then #its updated
           git subtree split -P ./AdvancedSessions -b master origin
           git push origin master --force
         fi 
