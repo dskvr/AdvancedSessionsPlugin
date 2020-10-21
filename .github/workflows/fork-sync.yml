@@ -9,10 +9,13 @@ jobs:
     name: Sync master with upstream latest
 
     steps:
-    - name: Checkout master
+    - name: Checkout origin
       uses: actions/checkout@v2
       with:
         ref: origin
+        
+    - name: Get HEAD 
+      run: echo "ref_current=$GITHUB_REF" >> $GITHUB_ENV
 
     - name: Pull upstream changes
       id: sync
@@ -21,6 +24,18 @@ jobs:
         upstream_repository: mordentral/AdvancedSessionsPlugin
         upstream_branch: master
 
+    - name: Get new HEAD 
+      run: echo "ref_synced=$GITHUB_REF" >> $GITHUB_ENV
+    
     - name: Timestamp
-      run: date
+      run: date  
+    
+    - name: Run 
+      run: |
+        if [[ "$ref_synced" != "$ref_current" ]]; then #it's updated
+          git subtree split -P ./AdvancedSessions -b master origin
+          git push origin master --force
+        fi 
+
+
     
