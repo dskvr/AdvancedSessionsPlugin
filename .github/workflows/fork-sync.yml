@@ -1,19 +1,26 @@
-name: Sync Fork
-
 on:
   schedule:
-    - cron: '*/30 * * * *' # every 30 minutes
-  workflow_dispatch: # on button click
+    - cron:  '0 7 * * 1,4'
+    # scheduled at 07:00 every Monday and Thursday
 
 jobs:
-  sync:
-
+  sync_with_upstream:
     runs-on: ubuntu-latest
+    name: Sync master with upstream latest
 
     steps:
-      - uses: tgymnich/fork-sync@v1.2
-        with:
-          github_token: ${{ github.token }}
-          owner: dskvr
-          base: master
-          head: origin
+    - name: Checkout master
+      uses: actions/checkout@v2
+      with:
+        ref: origin
+
+    - name: Pull upstream changes
+      id: sync
+      uses: aormsby/Fork-Sync-With-Upstream-action@v1
+      with:
+        upstream_repository: mordentral/AdvancedSessionsPlugin
+        upstream_branch: master
+
+    - name: Timestamp
+      run: date
+    
