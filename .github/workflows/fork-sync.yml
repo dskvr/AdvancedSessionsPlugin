@@ -1,7 +1,10 @@
+name: Sync with Upstream
+
 on:
   schedule:
     - cron:  '0 7 * * 1,4'
     # scheduled at 07:00 every Monday and Thursday
+  workflow_dispatch: 
 
 jobs:
   sync_with_upstream:
@@ -12,10 +15,10 @@ jobs:
     - name: Checkout origin
       uses: actions/checkout@v2
       with:
-        ref: origin
+        ref: master
         
     - name: Get HEAD 
-      run: echo "ref_current=$GITHUB_REF" >> $GITHUB_ENV
+      run: echo "ref_current=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
     - name: Pull upstream changes
       id: sync
@@ -23,16 +26,18 @@ jobs:
       with:
         upstream_repository: mordentral/AdvancedSessionsPlugin
         upstream_branch: master
+        target_branch: master
+        github_token: ${{ secrets.REPO_SCOPED_TOKEN }} 
 
     - name: Get new HEAD 
-      run: echo "ref_synced=$GITHUB_REF" >> $GITHUB_ENV
+      run: echo "ref_synced=$$(git rev-parse --short HEAD)" >> $GITHUB_ENV
     
     - name: Timestamp
       run: date  
     
-    - name: Run 
+    - name: Turn master into the AdvancedSessions plugin. 
       run: |
-        if [[ "$ref_synced" != "$ref_current" ]]; then #its updated
+        if [[ "$ref_synced" != "$ref_current" ]]; then
           git subtree split -P ./AdvancedSessions -b master origin
           git push origin master --force
         fi 
