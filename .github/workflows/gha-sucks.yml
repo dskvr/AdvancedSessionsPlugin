@@ -1,4 +1,5 @@
-name: Sync with Upstream
+## why do you do this github?  Why do you make it so hard for workflows to be interfaced with?!?!?!
+name: Sync with Upstream (2) because Github
 
 on:
   schedule:
@@ -18,7 +19,7 @@ jobs:
 
     - name: Update Git
       run: |
-        sudo apt update git -y
+        sudo apt-get update git
 
     - name: Pull upstream changes
       id: sync
