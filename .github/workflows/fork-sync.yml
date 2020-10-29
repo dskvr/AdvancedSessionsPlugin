@@ -2,8 +2,7 @@ name: Sync with Upstream
 
 on:
   schedule:
-    - cron:  '0 7 * * 1,4'
-    # scheduled at 07:00 every Monday and Thursday
+    - cron:  '0 7 * * 1,4' # scheduled at 07:00 every Monday and Thursday
   workflow_dispatch:
 
 jobs:
@@ -15,7 +14,11 @@ jobs:
     - name: Checkout origin
       uses: actions/checkout@v2
       with:
-        ref: master
+        ref: theirs
+
+    - name: Update Git
+      run: |
+        sudo apt update git -y
 
     - name: Pull upstream changes
       id: sync
@@ -23,19 +26,20 @@ jobs:
       with:
         upstream_repository: mordentral/AdvancedSessionsPlugin
         upstream_branch: master
-        target_branch: origin
+        target_branch: theirs
         github_token: ${{ secrets.REPO_SCOPED_TOKEN }}
 
     - name: Turn master into the AdvancedSessions plugin.
-      if: steps.sync.outputs.has_new_commits
+      # if: steps.sync.outputs.has_new_commits
       run: |
         git fetch --all
+        git checkout theirs
         git branch -D master
         git subtree split -P AdvancedSessions -b master theirs
         git push origin master --force
 
     - name: Add workflows into master because Github is janky
-      if: steps.sync.outputs.has_new_commits
+      # if: steps.sync.outputs.has_new_commits
       run: |
         git fetch --all
         git checkout master
