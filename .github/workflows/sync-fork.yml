@@ -1,0 +1,57 @@
+## why do you do this github?  Why do you make it so hard for workflows to be interfaced with?!?!?!
+name: Sync with Upstream and Collate a Plugin
+
+on:
+  schedule:
+    - cron:  '0 7 * * 1,4' # scheduled at 07:00 every Monday and Thursday
+  workflow_dispatch:
+
+jobs:
+  sync_with_upstream:
+    runs-on: ubuntu-latest
+    name: Sync master with upstream latest
+    steps:
+      - uses: fusion-engineering/setup-git-credentials@v2
+        with:
+          credentials: ${{secrets.GIT_CREDENTIALS}}
+
+      - name: Checkout origin
+        uses: actions/checkout@v2
+        with:
+          ref: theirs
+
+      - name: Pull upstream changes
+        id: sync
+        uses: aormsby/Fork-Sync-With-Upstream-action@v1
+        with:
+          upstream_repository: mordentral/AdvancedSessionsPlugin
+          upstream_branch: master
+          target_branch: theirs
+          github_token: ${{ secrets.REPO_SCOPED_TOKEN }}
+
+      - run: |
+          git config --global user.email "dskvr@users.noreply.github.com"
+          git config --global user.name "bad-dev-community"
+
+      - name: Turn master into the AdvancedSessions plugin.
+        # if: steps.sync.outputs.has_new_commits
+        run: |
+          git fetch --all
+          git checkout theirs
+          if [ `git branch --list master` ]; then
+             git branch -D master
+          fi
+          git subtree split -P AdvancedSessions -b master theirs
+          git push origin master --force
+
+      - name: Add workflows into master because Github is janky
+        # if: steps.sync.outputs.has_new_commits
+        run: |
+          git fetch --all
+          git checkout workflows
+          git checkout master
+          rm -rf .github
+          git restore --source=workflows .github
+          git add .
+          git commit -am "add .github workflows"
+          git push origin master
