@@ -27,7 +27,7 @@ jobs:
         github_token: ${{ secrets.REPO_SCOPED_TOKEN }}
 
     - name: Turn master into the AdvancedSessions plugin.
-      # if: steps.sync.outputs.has_new_commits
+      if: steps.sync.outputs.has_new_commits
       run: |
         git fetch --all
         git branch -D master
@@ -35,7 +35,7 @@ jobs:
         git push origin master --force
 
     - name: Add workflows into master because Github is janky
-      # if: steps.sync.outputs.has_new_commits
+      if: steps.sync.outputs.has_new_commits
       run: |
         git fetch --all
         git checkout master
