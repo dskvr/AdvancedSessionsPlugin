@@ -26,16 +26,16 @@ jobs:
         target_branch: origin
         github_token: ${{ secrets.REPO_SCOPED_TOKEN }}
 
-    - if: steps.sync.outputs.has_new_commits
-      name: Turn master into the AdvancedSessions plugin.
+    - name: Turn master into the AdvancedSessions plugin.
+      # if: steps.sync.outputs.has_new_commits
       run: |
-        if [[ "$ref_synced" != "$ref_current" ]]; then
-          git subtree split -P ./AdvancedSessions -b master origin
-          git push origin master --force
-        fi
+        git fetch --all
+        git branch -D master
+        git subtree split -P AdvancedSessions -b master theirs
+        git push origin master --force
 
-    - if: steps.sync.outputs.has_new_commits
-      name: Add workflows into master because Github is janky
+    - name: Add workflows into master because Github is janky
+      # if: steps.sync.outputs.has_new_commits
       run: |
         git fetch --all
         git checkout master
