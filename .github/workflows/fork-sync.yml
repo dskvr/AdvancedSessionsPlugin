@@ -33,3 +33,12 @@ jobs:
           git subtree split -P ./AdvancedSessions -b master origin
           git push origin master --force
         fi
+
+    - if: steps.sync.outputs.has_new_commits
+      name: Add workflows into master because Github is janky
+      run: |
+        git fetch --all
+        git checkout master
+        git restore --source workflows .github
+        git commit -am "add .github workflows"
+        git push origin master
