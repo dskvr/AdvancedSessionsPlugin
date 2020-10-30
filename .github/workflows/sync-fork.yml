@@ -34,7 +34,7 @@ jobs:
           git config --global user.name "bad-dev-community"
 
       - name: Turn master into the AdvancedSessions plugin.
-        # if: steps.sync.outputs.has_new_commits
+        if: steps.sync.outputs.has_new_commits
         run: |
           git fetch --all
           git checkout theirs
@@ -45,7 +45,7 @@ jobs:
           git push origin master --force
 
       - name: Add workflows into master because Github is janky
-        # if: steps.sync.outputs.has_new_commits
+        if: steps.sync.outputs.has_new_commits
         run: |
           git fetch --all
           git checkout workflows
