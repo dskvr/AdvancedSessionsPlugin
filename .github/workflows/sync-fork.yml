@@ -22,7 +22,7 @@ jobs:
 
       - name: Pull upstream changes
         id: sync
-        uses: aormsby/Fork-Sync-With-Upstream-action@v1
+        uses: aormsby/Fork-Sync-With-Upstream-action@v2.3
         with:
           upstream_repository: mordentral/AdvancedSessionsPlugin
           upstream_branch: master
