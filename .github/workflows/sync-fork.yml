@@ -1,4 +1,3 @@
-## why do you do this github?  Why do you make it so hard for workflows to be interfaced with?!?!?!
 name: Sync with Upstream/Subtree Master
 
 on:
